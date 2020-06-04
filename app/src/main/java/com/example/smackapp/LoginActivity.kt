@@ -1,5 +1,6 @@
 package com.example.smackapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -13,6 +14,8 @@ class LoginActivity : AppCompatActivity() {
 
     }
     fun signUpbtnLoginPageClicked(view: View){
+        val createUserBtnIntent=Intent(this, CreateUserActivity::class.java)
+        startActivity(createUserBtnIntent)
 
     }
 

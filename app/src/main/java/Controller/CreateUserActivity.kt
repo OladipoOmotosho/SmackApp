@@ -1,11 +1,11 @@
 package Controller
 
 import Services.AuthServices
-import android.content.Intent
+import Services.UserDataService
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.example.smackapp.R
 import kotlinx.android.synthetic.main.activity_create_user.*
 import java.util.*
@@ -53,6 +53,7 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserbtnClicked(view: View) {
+        val userName = createUserNameTxt.text.toString()
         val email = createEmailText.text.toString()
         val password = createPasswordText.text.toString()
 
@@ -60,7 +61,22 @@ class CreateUserActivity : AppCompatActivity() {
             if (registerSuccess) {
                 AuthServices.loginUser(this, email, password) { loginSuccess ->
                     if (loginSuccess) {
+                        AuthServices.createUser(
+                            this,
+                            userName,
+                            email,
+                            avatarColor,
+                            userAvatar
+                        ) { createSuccess ->
+                            if (createSuccess) {
+                                println(UserDataService.avatarName)
+                                println(UserDataService.avatarColor)
+                                println(UserDataService.name)
 
+                                finish()
+
+                            }
+                        }
                     }
                 }
             }

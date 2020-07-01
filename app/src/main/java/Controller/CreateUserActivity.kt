@@ -1,10 +1,11 @@
 package Controller
 
 import Services.AuthServices
-import Services.UserDataService
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.View.VISIBLE
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.smackapp.R
 import kotlinx.android.synthetic.main.activity_create_user.*
@@ -18,6 +19,7 @@ class CreateUserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_user)
+        createSpinner.visibility = View.INVISIBLE
     }
 
     fun generateUserAvatar(view: View) {
@@ -53,36 +55,66 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserbtnClicked(view: View) {
+        enableSpinner(true)
         val userName = createUserNameTxt.text.toString()
         val email = createEmailText.text.toString()
         val password = createPasswordText.text.toString()
+        if (userName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
 
-        AuthServices.registerUser(this, email, password) { registerSuccess ->
-            if (registerSuccess) {
-                AuthServices.loginUser(this, email, password) { loginSuccess ->
-                    if (loginSuccess) {
-                        AuthServices.createUser(
-                            this,
-                            userName,
-                            email,
-                            avatarColor,
-                            userAvatar
-                        ) { createSuccess ->
-                            if (createSuccess) {
-                                println(UserDataService.avatarName)
-                                println(UserDataService.avatarColor)
-                                println(UserDataService.name)
+            AuthServices.registerUser(this, email, password) { registerSuccess ->
+                if (registerSuccess) {
+                    AuthServices.loginUser(this, email, password) { loginSuccess ->
+                        if (loginSuccess) {
+                            AuthServices.createUser(
+                                this,
+                                userName,
+                                email,
+                                avatarColor,
+                                userAvatar
+                            ) { createSuccess ->
+                                if (createSuccess) {
 
-                                finish()
+                                    enableSpinner(false)
 
+                                    finish()
+
+                                } else {
+                                    errorToast()
+                                }
                             }
+                        } else {
+                            errorToast()
                         }
                     }
+                } else {
+                    errorToast()
                 }
+
             }
 
+        }else{
+            Toast.makeText(this, "Please fill in user name, email, and password", Toast.LENGTH_LONG).show()
+            enableSpinner(false)
         }
 
+
+    }
+
+    fun errorToast() {
+        Toast.makeText(this, "Something went, wrong please try again.", Toast.LENGTH_LONG).show()
+        enableSpinner(false)
+
+    }
+
+    fun enableSpinner(enable: Boolean) {
+        if (enable) {
+            createSpinner.visibility = VISIBLE
+        } else {
+            createSpinner.visibility = View.INVISIBLE
+        }
+        createUserBttn.isEnabled = !enable
+        createAvatarImageView.isEnabled = !enable
+        backgroundColorBtn.isEnabled = !enable
     }
 }
 
